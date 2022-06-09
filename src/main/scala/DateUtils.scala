@@ -8,7 +8,7 @@ import org.apache.spark.sql.types.{ DataType }
 import com.github.nscala_time.time.Imports.{ DateTime }
 
 object DateUtils {
-  
+
   // one day's open time, by second format[0, 1440)
   case class OpenTimeBySecond(start: Int, end: Int) {
     def checkOpen(t: Int): Int = {
@@ -17,17 +17,21 @@ object DateUtils {
     }
   }
 
+  case class OpenState(desc: String, weekDay: Int, answer: Boolean)
+
   def getDetailUDF(hoursMon: String, hoursTue: String, 
       hoursWed: String, hoursThu: String, hoursFri: String, 
       hoursSat: String, hoursSun: String, dateTime: Timestamp
-  ): (String, Int, Boolean) = {
+  ): OpenState = { //Map[String, String] = { //(String, Int, Boolean) = {
     val (_, weekDay, _) = getMomentHHmm(dateTime)
 
     val desc = Seq(hoursMon, hoursTue, hoursWed, hoursThu, hoursFri, hoursSat, hoursSun)(weekDay - 1)
 
     val open = isOpen(dateTime, hoursMon, hoursTue, hoursWed, hoursThu, hoursFri, hoursSat, hoursSun)
     
-    (desc, weekDay, open)
+    // (desc, weekDay, open)
+    // Map("desc" -> desc, "weekDay" -> weekDay.toString, "answer" -> open.toString)
+    OpenState(desc, weekDay, open)
   }
 
   def isOpenUDF(hoursMon: String, hoursTue: String, 

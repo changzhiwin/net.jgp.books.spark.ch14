@@ -22,7 +22,50 @@ $ YOUR_SPARK_HOME/bin/spark-submit \
 
 ## 3, print
 
-### Case: udf
+### Case: udf return case class
+```
+root
+ |-- Council_ID: string (nullable = true)
+ |-- Name: string (nullable = true)
+ |-- Opening_Hours_Monday: string (nullable = true)
+ |-- Opening_Hours_Tuesday: string (nullable = true)
+ |-- Opening_Hours_Wednesday: string (nullable = true)
+ |-- Opening_Hours_Thursday: string (nullable = true)
+ |-- Opening_Hours_Friday: string (nullable = true)
+ |-- Opening_Hours_Saturday: string (nullable = true)
+
+root
+ |-- Council_ID: string (nullable = true)
+ |-- Name: string (nullable = true)
+ |-- date: timestamp (nullable = true)
+ |-- open: struct (nullable = true)
+ |    |-- desc: string (nullable = true)
+ |    |-- weekDay: integer (nullable = false)
+ |    |-- answer: boolean (nullable = false)
+
+root
+ |-- Council_ID: string (nullable = true)
+ |-- Name: string (nullable = true)
+ |-- date: timestamp (nullable = true)
+ |-- desc: string (nullable = true)
+ |-- weekDay: integer (nullable = true)
+ |-- opening: boolean (nullable = true)
+
++----------+------------------------------------+-------------------+------------------------------------------------------------------+-------+-------+
+|Council_ID|Name                                |date               |desc                                                              |weekDay|opening|
++----------+------------------------------------+-------------------+------------------------------------------------------------------+-------+-------+
+|SD1       |County Library                      |2020-03-02 21:36:19|09:45-20:00                                                       |1      |false  |
+|SD2       |Ballyroan Library                   |2020-03-02 21:36:19|09:45-20:00                                                       |1      |false  |
+|SD3       |Castletymon Library                 |2020-03-02 21:36:19|09:45-17:00                                                       |1      |false  |
+|SD4       |Clondalkin Library                  |2020-03-02 21:36:19|09:45-20:00                                                       |1      |false  |
+|SD5       |Lucan Library                       |2020-03-02 21:36:19|09:45-20:00                                                       |1      |false  |
+|SD6       |Whitechurch Library                 |2020-03-02 21:36:19|14:00-17:00 and 18:00-20:00                                       |1      |false  |
+|SD7       |The John Jennings Library (Stewarts)|2020-07-02 16:36:19|10:00-17:00 (16:00 July and August) - closed for lunch 12:30-13:00|4      |false  |
+|SD7       |The John Jennings Library (Stewarts)|2020-03-02 21:36:19|10:00-17:00 (16:00 July and August) - closed for lunch 12:30-13:00|1      |false  |
++----------+------------------------------------+-------------------+------------------------------------------------------------------+-------+-------+
+```
+
+### Case: udf return tuple
 ```
 root
  |-- Council_ID: string (nullable = true)
@@ -79,6 +122,23 @@ root
 ```
 
 ## 4, Some diffcult case
+
+### Spark UDF returning more than one item
+- https://stackoverflow.com/questions/41337621/spark-udf-returning-more-than-one-item
+- https://stackoverflow.com/questions/48979440/how-to-use-udf-to-return-multiple-columns/48981218#48981218
+Have three options:
+- Return a Seq of items of the same type to create array column.
+```
+udf(() => Seq(1.0, 2.0, 3.0))
+```
+- Return a Map
+```
+udf(() => Map("x" -> 1.0, "y" -> -1.0))
+```
+- Return a product (tuple or an instance of a case class) to create struct column.
+```
+udf(() => (1.0, "foo", 5))
+```
 
 ### Scala process DateTime
 Ref: [Joda-Time](https://www.joda.org/joda-time/userguide.html), [nscala-time](https://github.com/nscala-time/nscala-time)
@@ -190,7 +250,3 @@ java.lang.SecurityException: Prohibited package name: java.sql
   at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
   at java.base/java.lang.Thread.run(Thread.java:829)
 ```
-
-## TODO
-- https://spark.apache.org/docs/latest/api/scala/org/apache/spark/sql/expressions/UserDefinedAggregateFunction.html
-- [UserDefinedAggregateFunction](https://spark.apache.org/docs/2.3.1/sql-programming-guide.html)

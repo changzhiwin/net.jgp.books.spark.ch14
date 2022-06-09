@@ -25,7 +25,9 @@ object OpenedLibraries extends Basic {
     // spark.udf.register("isOpen", udf[Boolean, String, String, String, String, String, String, String, Timestamp](DateUtils.isOpenUDF))
 
     // return (String, Int, Boolean)
-    spark.udf.register("isOpen", udf(DateUtils.getDetailUDF _)) //, DataType.fromDDL("desc STRING, weekDay INT, opening BOOLEAN"))
+    // return Map[String, String]
+    // return case class
+    spark.udf.register("isOpen", udf(DateUtils.getDetailUDF _))
 
     val librariesDF = getLibrariesDF(spark)
 
@@ -52,15 +54,14 @@ object OpenedLibraries extends Basic {
       drop("Opening_Hours_Saturday")
 
     retDF.printSchema
-    //use [spark-daria](https://github.com/MrPowers/spark-daria) lib
-    //finalDF.filter(col("open").isFalse).show(false)
 
-    val finalDF = retDF.withColumn("desc", $"open._1").
-      withColumn("weekDay", $"open._2").
-      withColumn("opening", $"open._3").
+    val finalDF = retDF.withColumn("desc", $"open.desc").
+      withColumn("weekDay", $"open.weekDay").
+      withColumn("opening", $"open.answer").
       drop("open")
 
     finalDF.printSchema
+    //use [spark-daria](https://github.com/MrPowers/spark-daria) lib
     finalDF.filter(col("opening").isFalse).show(false)
     
   }
