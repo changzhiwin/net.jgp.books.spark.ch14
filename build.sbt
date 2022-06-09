@@ -8,5 +8,7 @@ scalaVersion := "2.13.8"
 libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-sql" % "3.2.1" % "provided",
   "org.apache.spark" %% "spark-core" % "3.2.1" % "provided",
-  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4"
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
+  "com.github.mrpowers" %% "spark-daria" % "1.2.3",
+  "com.github.nscala-time" %% "nscala-time" % "2.30.0"
 )
