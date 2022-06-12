@@ -45,7 +45,7 @@ object DateUtils {
   def isOpen(dateTime: Timestamp, weekDays: String*): Boolean = {
     val (moment, weekDay, month) = getMomentHHmm(dateTime)
 
-    val weekDaySeq = weekDays.toSeq
+    val weekDaySeq = weekDays.toSeq.map(s => s.trim)
 
     // weekDay and month format: https://www.joda.org/joda-time/field.html
     weekDay match {
